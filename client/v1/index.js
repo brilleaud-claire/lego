@@ -96,6 +96,13 @@ console.log(dealsFiltered);
 // 🎯 TODO 7: Average percentage discount
 // 1. Determine the average percentage discount of the deals
 // 2. Log the average
+let arrDiscount = deals.map(deal => deal.discount)
+let sum = 0;
+for (let i=0; i<arrDiscount.length; i++){
+  sum = sum + arrDiscount[i];
+}
+let averageDiscount = sum/arrDiscount.length;
+console.log(averageDiscount);
 
 /**
  * 🏎
