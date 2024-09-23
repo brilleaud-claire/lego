@@ -44,6 +44,8 @@ console.log(highestReduction);
 // 🎯 TODO 2: Number of deals
 // 1. Create a variable and assign it the number of deals
 // 2. Log the variable
+let nbrDeals = deals.length;
+console.log(nbrDeals);
 
 // 🎯 TODO 3: Website name
 // 1. Create a variable and assign it the list of shopping community name only
