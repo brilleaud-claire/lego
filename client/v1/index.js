@@ -67,18 +67,25 @@ console.log(nbrShoppingCommunityName);
 // 3. Log the variable
 
 // sort by price
-function dealsSorted(deals){
+function dealsSortedByPrice(deals){
   let copy = deals;
   copy.sort((a, b) => a.price - b.price);
   return copy;
 }
-let sortedDeals = dealsSorted(deals)
-console.log(sortedDeals);
+let sortedDealsByPrice = dealsSortedByPrice(deals)
+console.log(sortedDealsByPrice);
 
 // 🎯 TODO 5: Sort by date
 // 1. Create a function to sort the deals by date
 // 2. Create a variable and assign it the list of deals by date from recent to old
 // 3. Log the variable
+function dealsSortedByDate(deals){
+  let copy = deals;
+  copy.sort((a, b) => new Date(b.published) - new Date(a.published));
+  return copy;
+}
+let sortedDealsByDate = dealsSortedByDate(deals);
+console.log(sortedDealsByDate);
 
 // 🎯 TODO 6: Filter a specific percentage discount range
 // 1. Filter the list of deals between 50% and 75%
