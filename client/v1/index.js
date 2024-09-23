@@ -57,11 +57,23 @@ for (let i=0; i<deals.length; i++){
     shoppingCommunityName.push(deals[i].community)
   }
 }
+let nbrShoppingCommunityName = shoppingCommunityName.length;
 console.log(shoppingCommunityName);
+console.log(nbrShoppingCommunityName);
+
 // 🎯 TODO 4: Sort by price
 // 1. Create a function to sort the deals by price
 // 2. Create a variable and assign it the list of sets by price from lowest to highest
 // 3. Log the variable
+
+// sort by price
+function dealsSorted(deals){
+  let copy = deals;
+  copy.sort((a, b) => a.price - b.price);
+  return copy;
+}
+let sortedDeals = dealsSorted(deals)
+console.log(sortedDeals);
 
 // 🎯 TODO 5: Sort by date
 // 1. Create a function to sort the deals by date
