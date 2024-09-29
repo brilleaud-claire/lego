@@ -124,6 +124,19 @@ console.log(averageDiscount);
 //   'community-name-n': [{...}, {...}, ..., {...}],
 // };
 //
+const communities = deals.reduce((acc, deal) => {
+  const community = deal.community;
+  
+  if (!acc[community]) {
+    acc[community] = [];
+  }
+  
+  acc[community].push(deal);
+  
+  return acc;
+}, {});
+
+console.log(communities);
 // 2. Log the variable
 // 3. Log the number of deals by community
 
