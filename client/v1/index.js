@@ -165,12 +165,16 @@ let communitiesByPrice = communities;
 for (const community in communities) {
   communitiesByPrice[community] = dealsSortedByPrice(communitiesByPrice[community])
 }
-console.log(communitiesByPrice)
+console.log(communitiesByPrice);
 
 // 🎯 TODO 10: Sort by date for each community
 // 1. For each set, sort the deals by date, from old to recent
 // 2. Log the sort
-
+let communitiesByDate = communities;
+for (const community in communities) {
+  communitiesByDate[community] = dealsSortedByDate(communitiesByDate[community])
+}
+console.log(communitiesByDate);
 
 /**
  * 🧥
