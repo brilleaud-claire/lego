@@ -477,6 +477,11 @@ camera.favorite = true;
 // 1. Log `sealedCamera` and `camera` variables
 // 2. What do you notice?
 
+console.log(camera);
+console.log(sealedCamera);
+
+// On remarque que la propriété favorite est présente dans les deux, ce que je suppose c'est que nous ne créons pas de copy lorsqu'on a créé camera, on a créé un autre chemin d'accès c'est tout. 
+
 // we make (again) a new assignment again
 sealedCamera = {
   title: 'La caméra Hommage à Walt Disney lego set 43230',
@@ -487,7 +492,11 @@ sealedCamera = {
 };
 
 // 3. Update `camera` property with `favorite` to true WITHOUT changing sealedCamera properties
+camera = { ...sealedCamera };  // Crée une nouvelle copie de l'objet
+camera.favorite = true;
 
+console.log('sealedCamera:', sealedCamera);  // `favorite` ne sera pas présent ici
+console.log('camera:', camera);
 
 // 🎯 TODO 16: Compute the profitability
 // From a specific deal called `deal`
