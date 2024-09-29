@@ -124,25 +124,48 @@ console.log(averageDiscount);
 //   'community-name-n': [{...}, {...}, ..., {...}],
 // };
 //
+
+// 2. Log the variable
+// 3. Log the number of deals by community
 const communities = deals.reduce((acc, deal) => {
   const community = deal.community;
   
+  // Si la communauté n'existe pas encore, on l'initialise à un tableau vide
   if (!acc[community]) {
     acc[community] = [];
   }
   
+  // On ajoute le deal à la communauté correspondante
   acc[community].push(deal);
   
   return acc;
 }, {});
 
-console.log(communities);
-// 2. Log the variable
-// 3. Log the number of deals by community
+const community = {};
+deals.forEach(deal => {
+  const community = deal.community;
+  
+  if (!communities[community]) {
+    communities[community] = [];
+  }
+  
+  communities[community].push(deal);
+});
 
+console.log(communities);
+
+// Afficher le nombre de deals par communauté
+for (const community in communities) {
+  console.log(`${community}: ${communities[community].length} deals`);
+}
 // 🎯 TODO 9: Sort by price for each community
 // 1. For each community, sort the deals by discount price, from highest to lowest
 // 2. Log the sort
+let communitiesByPrice = communities;
+for (const community in communities) {
+  communitiesByPrice[community] = dealsSortedByPrice(communitiesByPrice[community])
+}
+console.log(communitiesByPrice)
 
 // 🎯 TODO 10: Sort by date for each community
 // 1. For each set, sort the deals by date, from old to recent
