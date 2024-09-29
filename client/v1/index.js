@@ -424,6 +424,21 @@ console.log(`99e percentile (p99) : ${p99}€`);
 // 🎯 TODO 12: Very old listed items
 // // 1. Log if we have very old items (true or false)
 // // A very old item is an item `released` more than 3 weeks ago.
+// Définir la durée maximale en millisecondes pour 3 semaines
+const threeWeeksInMilliseconds = 3 * 7 * 24 * 60 * 60 * 1000;
+
+// Obtenir la date actuelle
+const currentDate = new Date();
+
+// Vérifier si nous avons des articles très anciens
+const hasVeryOldItems = VINTED.some(item => {
+  const itemDate = new Date(item.released);
+  const timeDifference = currentDate - itemDate;
+  return timeDifference > threeWeeksInMilliseconds;
+});
+
+// Affichage du résultat
+console.log(`Y a-t-il des articles très anciens ? ${hasVeryOldItems}`);
 
 // 🎯 TODO 13: Find a specific item
 // 1. Find the item with the uuid `f2c5377c-84f9-571d-8712-98902dcbb913`
@@ -433,7 +448,7 @@ console.log(`99e percentile (p99) : ${p99}€`);
 // 1. Delete the item with the uuid `f2c5377c-84f9-571d-8712-98902dcbb913`
 // 2. Log the new list of items
 
-// 🎯 TODO 5: Save a favorite item
+// 🎯 TODO 15: Save a favorite item
 // We declare and assign a variable called `sealedCamera`
 let sealedCamera = {
   title: 'La caméra Hommage à Walt Disney lego set 43230',
@@ -464,7 +479,7 @@ sealedCamera = {
 // 3. Update `camera` property with `favorite` to true WITHOUT changing sealedCamera properties
 
 
-// 🎯 TODO 11: Compute the profitability
+// 🎯 TODO 16: Compute the profitability
 // From a specific deal called `deal`
 const deal = {
   'title':  'La caméra Hommage à Walt Disney',
