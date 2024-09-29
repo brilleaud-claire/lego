@@ -396,6 +396,30 @@ const VINTED = [
 // 2. Compute the p95 price value of the listing
 // 3. Compute the p99 price value of the listing
 // The p95 value (95th percentile) is the lower value expected to be exceeded in 95% of the vinted items
+'use strict';
+
+const prices = VINTED.map(item => item.price);
+
+// Calcul de la moyenne
+const average = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+
+// Tri des prix par ordre croissant pour le calcul des percentiles
+const sortedPrices = [...prices].sort((a, b) => a - b);
+
+// Calcul du percentile
+function percentile(arr, p) {
+  const index = Math.ceil(p * arr.length) - 1;
+  return arr[index];
+}
+
+// Calcul du p95 et p99
+const p95 = percentile(sortedPrices, 0.95);
+const p99 = percentile(sortedPrices, 0.99);
+
+// Affichage des résultats
+console.log(`Moyenne des prix : ${average.toFixed(2)}€`);
+console.log(`95e percentile (p95) : ${p95}€`);
+console.log(`99e percentile (p99) : ${p99}€`);
 
 // 🎯 TODO 12: Very old listed items
 // // 1. Log if we have very old items (true or false)
