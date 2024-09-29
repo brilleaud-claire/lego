@@ -444,6 +444,11 @@ console.log(`Y a-t-il des articles très anciens ? ${hasVeryOldItems}`);
 // 1. Find the item with the uuid `f2c5377c-84f9-571d-8712-98902dcbb913`
 // 2. Log the item
 
+const targetUuid = 'f2c5377c-84f9-571d-8712-98902dcbb913';
+const foundItem = VINTED.find(item => item.uuid === targetUuid);
+
+console.log(foundItem);
+
 // 🎯 TODO 14: Delete a specific item
 // 1. Delete the item with the uuid `f2c5377c-84f9-571d-8712-98902dcbb913`
 // 2. Log the new list of items
