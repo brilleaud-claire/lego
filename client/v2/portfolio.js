@@ -28,6 +28,7 @@ let currentPagination = {};
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
+const selectFilter = document.querySelector('#filters');
 const selectLegoSetIds = document.querySelector('#lego-set-id-select');
 const sectionDeals= document.querySelector('#deals');
 const spanNbDeals = document.querySelector('#nbDeals');
@@ -67,6 +68,7 @@ const fetchDeals = async (page = 1, size = 6) => {
   }
 };
 
+
 /**
  * Render list of deals
  * @param  {Array} deals
@@ -81,6 +83,7 @@ const renderDeals = deals => {
         <span>${deal.id}</span>
         <a href="${deal.link}">${deal.title}</a>
         <span>${deal.price}</span>
+        <span>${deal.discount}</span>
       </div>
     `;
     })
@@ -152,6 +155,25 @@ selectShow.addEventListener('change', async (event) => {
   setCurrentDeals(deals);
   render(currentDeals, currentPagination);
 });
+ 
+selectFilter.addEventListener('click', async (event) => {
+  const target = event.target;
+  const deals = await fetchDeals(currentPagination.currentPage, selectShow.value);
+  // Ensure the click was on a button
+  if (target.tagName !== 'BUTTON') return;
+
+  setCurrentDeals(deals);
+
+  if (target.classList.contains('discount')) {
+    // Fetch and filter by discount
+    currentDeals = currentDeals.filter(item => item.discount >=50); 
+  }
+  // Update the UI with filtered results
+  
+  renderDeals(currentDeals, currentPagination);
+
+})
+
 
 selectPage.addEventListener('change', async (event) => {
   const deals = await fetchDeals(parseInt(event.target.value), selectShow.value);
