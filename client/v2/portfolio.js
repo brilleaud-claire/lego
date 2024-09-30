@@ -148,7 +148,6 @@ const render = (deals, pagination) => {
 /**
  * Select the number of deals to display
  */
- 
 selectShow.addEventListener('change', async (event) => {
   const deals = await fetchDeals(currentPagination.currentPage, parseInt(event.target.value));
 
@@ -156,6 +155,19 @@ selectShow.addEventListener('change', async (event) => {
   render(currentDeals, currentPagination);
 });
 
+/**
+ * Select the page to display
+ */
+selectPage.addEventListener('change', async (event) => {
+  const deals = await fetchDeals(parseInt(event.target.value), selectShow.value);
+
+  setCurrentDeals(deals);
+  render(currentDeals, currentPagination);
+});
+
+/**
+ * Sort by price and date
+ */
 selectSort.addEventListener('change', async (event) => {
   const deals = await fetchDeals(currentPagination.currentPage, selectShow.value);
   const target = event.target;
@@ -168,9 +180,20 @@ selectSort.addEventListener('change', async (event) => {
     // Fetch and filter by discount
     currentDeals = currentDeals.sort((a, b) => b.price - a.price); 
   }
+  else if (target.value=='date-asc') {
+    // Fetch and filter by discount
+    currentDeals = currentDeals.sort((a, b) => b.published - a.published); 
+  }
+  else if (target.value=='date-desc') {
+    // Fetch and filter by discount
+    currentDeals = currentDeals.sort((a, b) => a.published - b.published); 
+  }
   render(currentDeals, currentPagination);
 });
- 
+
+/**
+ * Filter by discount, hot deals and temperature
+ */
 selectFilter.addEventListener('click', async (event) => {
   const target = event.target;
   const deals = await fetchDeals(currentPagination.currentPage, selectShow.value);
@@ -197,14 +220,6 @@ selectFilter.addEventListener('click', async (event) => {
 
 })
 
-
-selectPage.addEventListener('change', async (event) => {
-  const deals = await fetchDeals(parseInt(event.target.value), selectShow.value);
-
-  setCurrentDeals(deals);
-  render(currentDeals, currentPagination);
-});
-
 document.addEventListener('DOMContentLoaded', async () => {
   const deals = await fetchDeals();
 
@@ -213,11 +228,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 /**
-
-Feature 5 - Sort by price
-As a user
-I want to sort by price
-So that I can easily identify cheapest and expensive deals
 
 Feature 5 - Sort by date
 As a user
