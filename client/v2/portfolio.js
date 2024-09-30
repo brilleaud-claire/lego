@@ -29,6 +29,7 @@ let currentPagination = {};
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectFilter = document.querySelector('#filters');
+const selectSort = document.querySelector('#sort-select');
 const selectLegoSetIds = document.querySelector('#lego-set-id-select');
 const sectionDeals= document.querySelector('#deals');
 const spanNbDeals = document.querySelector('#nbDeals');
@@ -154,6 +155,21 @@ selectShow.addEventListener('change', async (event) => {
   setCurrentDeals(deals);
   render(currentDeals, currentPagination);
 });
+
+selectSort.addEventListener('change', async (event) => {
+  const deals = await fetchDeals(currentPagination.currentPage, selectShow.value);
+  const target = event.target;
+  setCurrentDeals(deals);
+  if (target.value=='price-asc') {
+    // Fetch and filter by discount
+    currentDeals = currentDeals.sort((a, b) => a.price - b.price); 
+  }
+  else if (target.value=='price-desc') {
+    // Fetch and filter by discount
+    currentDeals = currentDeals.sort((a, b) => b.price - a.price); 
+  }
+  render(currentDeals, currentPagination);
+});
  
 selectFilter.addEventListener('click', async (event) => {
   const target = event.target;
@@ -197,16 +213,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 /**
-
-Feature 3 - Filter by most commented
-As a user
-I want to filter by most commented deals
-So that I can browse deals with more than 15 comments
-
-Feature 4 - Filter by hot deals
-As a user
-I want to filter by hot deals
-So that I can browse deals with a temperature more important than 100
 
 Feature 5 - Sort by price
 As a user
