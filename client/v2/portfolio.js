@@ -83,7 +83,6 @@ const renderDeals = deals => {
         <span>${deal.id}</span>
         <a href="${deal.link}">${deal.title}</a>
         <span>${deal.price}</span>
-        <span>${deal.discount}</span>
       </div>
     `;
     })
@@ -168,6 +167,14 @@ selectFilter.addEventListener('click', async (event) => {
     // Fetch and filter by discount
     currentDeals = currentDeals.filter(item => item.discount >=50); 
   }
+  else if (target.classList.contains('most-commented')) {
+    // Fetch and filter by most commented
+    currentDeals = currentDeals.filter(item => item.comments >=15);
+  } 
+  else if (target.classList.contains('hot-deals')) {
+    // Fetch and filter by hot deals
+    currentDeals = currentDeals.filter(item => item.temperature >=100);
+  }
   // Update the UI with filtered results
   
   renderDeals(currentDeals, currentPagination);
@@ -190,10 +197,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 /**
-Feature 2 - Filter by best discount
-As a user
-I want to filter by best discount
-So that I can browse deals with a discount more important than 50%
 
 Feature 3 - Filter by most commented
 As a user
