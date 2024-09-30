@@ -154,7 +154,7 @@ selectShow.addEventListener('change', async (event) => {
 });
 
 selectPage.addEventListener('change', async (event) => {
-  const deals = await fetchDeals(parseInt(event.target.value), currentDeals.size);
+  const deals = await fetchDeals(parseInt(event.target.value), selectShow.value);
 
   setCurrentDeals(deals);
   render(currentDeals, currentPagination);
@@ -168,11 +168,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 /**
-Feature 1 - Browse pages
-As a user
-I want to browse available pages
-So that I can load more deals
-
 Feature 2 - Filter by best discount
 As a user
 I want to filter by best discount
