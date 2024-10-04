@@ -38,6 +38,7 @@ const selectLegoSetIds = document.querySelector('#lego-set-id-select');
 const sectionDeals= document.querySelector('#deals');
 const sectionDealsVinted= document.querySelector('#VintedDeals');
 const spanNbDeals = document.querySelector('#nbDeals');
+const spanNbSales = document.querySelector('#nbSales');
 
 /**
  * Set global value
@@ -156,7 +157,7 @@ const renderDealsVinted = deals => {
   div.innerHTML = template;
   fragment.appendChild(div);
   if (sectionDealsVinted) {
-    sectionDealsVinted.innerHTML = '<h3>VintedDeals</h3>';
+    sectionDealsVinted.innerHTML = '<h3>Vinted Deals</h3>';
     sectionDealsVinted.appendChild(fragment);
   } else {
     console.error("Element sectionDealsVinted not found");
@@ -178,6 +179,7 @@ const renderPagination = pagination => {
   selectPage.innerHTML = options;
   selectPage.selectedIndex = currentPage - 1;
 };
+
 
 /**
  * Render lego set ids selector
@@ -201,6 +203,7 @@ const renderIndicators = pagination => {
 
   spanNbDeals.innerHTML = count;
 };
+
  
 const render = (deals, pagination) => {
   renderDeals(deals);
@@ -211,8 +214,8 @@ const render = (deals, pagination) => {
 
 const renderVinted = (deals, pagination) => {
   renderDealsVinted(deals);
-  renderPagination(pagination);
-  renderIndicators(pagination);
+  //renderPagination(pagination);
+  //renderIndicators(pagination);
   //renderLegoSetIds(deals)
 };
 
@@ -245,9 +248,9 @@ selectPage.addEventListener('change', async (event) => {
  */
 selectLegoSetIds.addEventListener('change', async (event) => {
   const deals = await fetchVintedDeals(event.target.value);
-  console.log(event.target.value);
+  spanNbSales.innerHTML = deals.result.length;
   setCurrentDealsVinted(deals);
-  renderVinted(currentDealsVinted, currentPagination);
+  renderVinted(currentDealsVinted, currentPaginationVinted);
 });
 
 /**
@@ -312,13 +315,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   render(currentDeals, currentPagination);
 });
 
-console.log(currentDeals);
+
 
 /**
-Feature 7 - Display Vinted sales
-As a user for a given set id
-I want to display vinted sales
-So that I can easily identify current sales for a given set id
 
 Feature 8 - Specific indicators
 As a user for a given set id
