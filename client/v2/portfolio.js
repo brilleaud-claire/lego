@@ -352,11 +352,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /**
 
-Feature 9 - average, p25, p50 and p95 price value indicators
-As a user for a given set id
-I want to indicate the average, p5, p25 and p50 price value
-So that I can understand the sales prices for a given set
-
 Feature 10 - Lifetime value
 As a user for a given set id
 I want to indicate the Lifetime value
