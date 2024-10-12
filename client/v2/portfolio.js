@@ -146,7 +146,7 @@ const renderDeals = deals => {
       return `
       <div class="deal" id=${deal.uuid}>
         <span>${deal.id}</span>
-        <a href="${deal.link}">${deal.title}</a>
+        <a href="${deal.link}" target="_blank">${deal.title}</a> <!-- Open link in new tab -->
         <span>${deal.price}</span>
       </div>
     `;
@@ -197,7 +197,7 @@ const renderDealsVinted = deals => {
       const lifetime = calculateLifetime(deal.published); // Calculate lifetime for each deal
       return `
       <div class="VintedDeals" id=${deal.uuid}>
-        <a href="${deal.link}">${deal.title}</a>
+        <a href="${deal.link}" target="_blank">${deal.title}</a> <!-- Open link in new tab -->
         <span>Price: ${deal.price}</span>
         <span>Lifetime: ${lifetime}</span> <!-- Display lifetime here -->
       </div>
@@ -378,11 +378,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 /**
-
-Feature 10 - Lifetime value
-As a user for a given set id
-I want to indicate the Lifetime value
-So that I can understand how long a set exists on Vinted
 
 Feature 11 - Open product link
 As a user
