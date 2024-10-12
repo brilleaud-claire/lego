@@ -160,7 +160,33 @@ const renderDeals = deals => {
 };
 
 /**
- * Render list of deals Vinted
+ * Calculate the lifetime value (in days) from the published timestamp.
+ * @param {Number} published - Unix timestamp of when the deal was published
+ * @return {String} - The lifetime in a human-readable format
+ */
+const calculateLifetime = published => {
+  const now = Math.floor(Date.now() / 1000); // Current time in seconds
+  const diffInSeconds = now - published;
+  const diffInDays = Math.floor(diffInSeconds / (3600 * 24)); // Convert seconds to days
+
+  if (diffInDays < 1) {
+    return "Published today";
+  } else if (diffInDays === 1) {
+    return "Published 1 day ago";
+  } else if (diffInDays < 30) {
+    return `Published ${diffInDays} days ago`;
+  } else if (diffInDays < 365) {
+    const diffInMonths = Math.floor(diffInDays / 30);
+    return `Published ${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
+  } else {
+    const diffInYears = Math.floor(diffInDays / 365);
+    return `Published ${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
+  }
+};
+
+
+/**
+ * Render list of deals Vinted with lifetime values
  * @param  {Array} deals
  */
 const renderDealsVinted = deals => {
@@ -168,11 +194,12 @@ const renderDealsVinted = deals => {
   const div = document.createElement('div');
   const template = deals
     .map(deal => {
+      const lifetime = calculateLifetime(deal.published); // Calculate lifetime for each deal
       return `
       <div class="VintedDeals" id=${deal.uuid}>
-        
         <a href="${deal.link}">${deal.title}</a>
-        <span>${deal.price}</span>
+        <span>Price: ${deal.price}</span>
+        <span>Lifetime: ${lifetime}</span> <!-- Display lifetime here -->
       </div>
     `;
     })
