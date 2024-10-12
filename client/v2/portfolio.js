@@ -135,7 +135,7 @@ const calculatePriceStatistics = prices => {
 };
 
 /**
- * Render list of deals
+ * Render list of regular deals with an option to save as favorite
  * @param  {Array} deals
  */
 const renderDeals = deals => {
@@ -147,7 +147,8 @@ const renderDeals = deals => {
       <div class="deal" id=${deal.uuid}>
         <span>${deal.id}</span>
         <a href="${deal.link}" target="_blank">${deal.title}</a> <!-- Open link in new tab -->
-        <span>${deal.price}</span>
+        <span>Price: ${deal.price}</span>
+        <button class="favorite-btn" data-deal-id="${deal.uuid}">Save as Favorite</button> <!-- Add Save as Favorite button -->
       </div>
     `;
     })
@@ -157,7 +158,80 @@ const renderDeals = deals => {
   fragment.appendChild(div);
   sectionDeals.innerHTML = '<h2>Deals</h2>';
   sectionDeals.appendChild(fragment);
+
+  // Add event listeners to the "Favorite" buttons
+  const favoriteButtons = document.querySelectorAll('.favorite-btn');
+  favoriteButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+      const dealId = event.target.getAttribute('data-deal-id');
+      saveDealAsFavorite(dealId);
+      renderFavoriteDeals();
+    });
+  });
 };
+
+/**
+ * Save deal as favorite
+ * @param {String} dealId - ID of the deal to save
+ */
+const saveDealAsFavorite = (dealId) => {
+  const favoriteDeals = JSON.parse(localStorage.getItem('favoriteDeals')) || [];
+
+  // Find the deal by ID from current deals
+  const deal = currentDeals.find(d => d.uuid === dealId);
+
+  if (deal) {
+    // Check if deal is already saved
+    const isAlreadySaved = favoriteDeals.some(favDeal => favDeal.uuid === dealId);
+
+    if (!isAlreadySaved) {
+      favoriteDeals.push(deal);
+      localStorage.setItem('favoriteDeals', JSON.stringify(favoriteDeals));
+      alert('Deal saved as favorite!');
+    } else {
+      alert('This deal is already in your favorites.');
+    }
+  } else {
+    alert('Deal not found!');
+  }
+};
+
+/**
+ * Render list of favorite deals
+ */
+const renderFavoriteDeals = () => {
+  const favoriteDeals = JSON.parse(localStorage.getItem('favoriteDeals')) || [];
+  const fragment = document.createDocumentFragment();
+  const div = document.createElement('div');
+
+  const template = favoriteDeals
+    .map(deal => {
+      return `
+      <div class="FavoriteDeals" id=${deal.uuid}>
+        <a href="${deal.link}" target="_blank">${deal.title}</a>
+        <span>Price: ${deal.price}</span>
+      </div>
+    `;
+    })
+    .join('');
+
+  div.innerHTML = template;
+  fragment.appendChild(div);
+  
+  // Assuming you have a section for favorite deals
+  const sectionFavoriteDeals = document.querySelector('#favoriteDeals');
+  if (sectionFavoriteDeals) {
+    sectionFavoriteDeals.innerHTML = '<h3>Your Favorite Deals</h3>';
+    sectionFavoriteDeals.appendChild(fragment);
+  } else {
+    console.error("Element sectionFavoriteDeals not found");
+  }
+};
+
+// Load favorite deals when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  renderFavoriteDeals();
+});
 
 /**
  * Calculate the lifetime value (in days) from the published timestamp.
@@ -379,20 +453,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /**
 
-Feature 11 - Open product link
-As a user
-I want to open deal link in a new page
-So that I can buy the product easily
-
-Feature 12 - Open sold item link
-As a user
-I want to open sold item link in a new page
-So that I can understand the sold item easily
-
 Feature 13 - Save as favorite
 As a user
 I want to save a deal as favorite
-So that I can retreive this deal later
+So that I can retreive this deal lateri wan
 
 Feature 14 - Filter by favorite
 As a user
