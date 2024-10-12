@@ -39,6 +39,7 @@ const sectionDeals= document.querySelector('#deals');
 const sectionDealsVinted= document.querySelector('#VintedDeals');
 const spanNbDeals = document.querySelector('#nbDeals');
 const spanNbSales = document.querySelector('#nbSales');
+const filterFavoritesCheckbox = document.querySelector('#filter-favorites-checkbox');
 
 /**
  * Set global value
@@ -135,8 +136,8 @@ const calculatePriceStatistics = prices => {
 };
 
 /**
- * Render list of regular deals with an option to save as favorite
- * @param  {Array} deals
+ * Render list of deals (regular or favorite)
+ * @param  {Array} deals - list of deals to display
  */
 const renderDeals = deals => {
   const fragment = document.createDocumentFragment();
@@ -165,7 +166,6 @@ const renderDeals = deals => {
     button.addEventListener('click', (event) => {
       const dealId = event.target.getAttribute('data-deal-id');
       saveDealAsFavorite(dealId);
-      renderFavoriteDeals();
     });
   });
 };
@@ -197,35 +197,17 @@ const saveDealAsFavorite = (dealId) => {
 };
 
 /**
- * Render list of favorite deals
+ * Render list of favorite deals (filtered)
  */
 const renderFavoriteDeals = () => {
   const favoriteDeals = JSON.parse(localStorage.getItem('favoriteDeals')) || [];
-  const fragment = document.createDocumentFragment();
-  const div = document.createElement('div');
 
-  const template = favoriteDeals
-    .map(deal => {
-      return `
-      <div class="FavoriteDeals" id=${deal.uuid}>
-        <a href="${deal.link}" target="_blank">${deal.title}</a>
-        <span>Price: ${deal.price}</span>
-      </div>
-    `;
-    })
-    .join('');
-
-  div.innerHTML = template;
-  fragment.appendChild(div);
-  
-  // Assuming you have a section for favorite deals
-  const sectionFavoriteDeals = document.querySelector('#favoriteDeals');
-  if (sectionFavoriteDeals) {
-    sectionFavoriteDeals.innerHTML = '<h3>Your Favorite Deals</h3>';
-    sectionFavoriteDeals.appendChild(fragment);
-  } else {
-    console.error("Element sectionFavoriteDeals not found");
+  if (favoriteDeals.length === 0) {
+    sectionDeals.innerHTML = '<p>No favorite deals saved yet.</p>';
+    return;
   }
+
+  renderDeals(favoriteDeals); // Use the same renderDeals function to show favorite deals
 };
 
 // Load favorite deals when the page loads
@@ -449,14 +431,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   render(currentDeals, currentPagination);
 });
 
-
+filterFavoritesCheckbox.addEventListener('change', () => {
+  if (filterFavoritesCheckbox.checked) {
+    // Filter and display only favorite deals
+    renderFavoriteDeals();
+  } else {
+    // Display all deals
+    render(currentDeals, currentPagination);
+  }
+});
 
 /**
-
-Feature 13 - Save as favorite
-As a user
-I want to save a deal as favorite
-So that I can retreive this deal lateri wan
 
 Feature 14 - Filter by favorite
 As a user
