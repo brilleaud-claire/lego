@@ -101,14 +101,38 @@ const fetchVintedDeals = async (id = "21345") => {
       console.error(body);
       return {currentDealsVinted, currentPaginationVinted};
     }
-
-    return body.data;
+    const prices = body.data.result.map(deal => deal.price); // Extract prices
+    return { deals: body.data.result, prices }; // Return both deals and prices
+    //console.log(deals);
+    //console.log(prices);
   } catch (error) {
     console.error(error);
     return {currentDealsVinted, currentPaginationVinted};
   }
 };
 
+/**
+ * Calculate statistics like average, p25, p50 (median), p95.
+ * @param  {Array} prices - list of prices
+ * @return {Object} - object with average, p25, p50, p95 values
+ */
+const calculatePriceStatistics = prices => {
+  // Convert strings to numbers and filter out invalid entries
+  const validPrices = prices
+    .map(price => parseFloat(price)) // Convert to float
+    .filter(price => !isNaN(price)); // Ensure valid numbers
+
+  if (!validPrices.length) return { average: 0, p25: 0, p50: 0, p95: 0 };
+
+  validPrices.sort((a, b) => a - b); // Sort prices in ascending order
+
+  const average = (validPrices.reduce((sum, price) => sum + price, 0) / validPrices.length).toFixed(2);
+  const p25 = validPrices[Math.floor(validPrices.length * 0.25)]?.toFixed(2);
+  const p50 = validPrices[Math.floor(validPrices.length * 0.5)]?.toFixed(2); // Median
+  const p95 = validPrices[Math.floor(validPrices.length * 0.95)]?.toFixed(2);
+
+  return { average, p25, p50, p95 };
+};
 
 /**
  * Render list of deals
@@ -247,10 +271,19 @@ selectPage.addEventListener('change', async (event) => {
  * Select the id vinted to display
  */
 selectLegoSetIds.addEventListener('change', async (event) => {
-  const deals = await fetchVintedDeals(event.target.value);
-  spanNbSales.innerHTML = deals.result.length;
+  const { deals, prices } = await fetchVintedDeals(event.target.value);
+
+  spanNbSales.innerHTML = deals.length;
+
+  const { average, p25, p50, p95 } = calculatePriceStatistics(prices);
+  // Display price statistics
+  document.querySelector('#averagePrice').textContent = `Average: ${average}`;
+  document.querySelector('#p25Price').textContent = `P25: ${p25}`;
+  document.querySelector('#p50Price').textContent = `P50: ${p50}`;
+  document.querySelector('#p95Price').textContent = `P95: ${p95}`;
+
   setCurrentDealsVinted(deals);
-  renderVinted(currentDealsVinted, currentPaginationVinted);
+  renderVinted(deals, currentPaginationVinted);
 });
 
 /**
@@ -318,11 +351,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 /**
-
-Feature 8 - Specific indicators
-As a user for a given set id
-I want to indicate the total number of sales
-So that I can understand the sales market
 
 Feature 9 - average, p25, p50 and p95 price value indicators
 As a user for a given set id
