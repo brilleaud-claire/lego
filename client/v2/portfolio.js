@@ -146,10 +146,13 @@ const renderDeals = deals => {
     .map(deal => {
       return `
       <div class="deal" id=${deal.uuid}>
-        <span>${deal.id}</span>
-        <a href="${deal.link}" target="_blank">${deal.title}</a> <!-- Open link in new tab -->
+        <img src="${deal.photo}" alt="Deal Image"/>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <span>ID: ${deal.id}</span>
+          <a href="${deal.link}" target="_blank">${deal.title}</a>
+      </div>
         <span>Price: ${deal.price}</span>
-        <button class="favorite-btn" data-deal-id="${deal.uuid}">Save as Favorite</button> <!-- Add Save as Favorite button -->
+        <button class="favorite-btn" data-deal-id="${deal.uuid}">Save as Favorite</button> 
       </div>
     `;
     })
@@ -240,7 +243,6 @@ const calculateLifetime = published => {
   }
 };
 
-
 /**
  * Render list of deals Vinted with lifetime values
  * @param  {Array} deals
@@ -253,9 +255,11 @@ const renderDealsVinted = deals => {
       const lifetime = calculateLifetime(deal.published); // Calculate lifetime for each deal
       return `
       <div class="VintedDeals" id=${deal.uuid}>
-        <a href="${deal.link}" target="_blank">${deal.title}</a> <!-- Open link in new tab -->
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+          <a href="${deal.link}" target="_blank">${deal.title}</a>
         <span>Price: ${deal.price}</span>
         <span>Lifetime: ${lifetime}</span> <!-- Display lifetime here -->
+        <span> </span>
       </div>
     `;
     })
@@ -442,11 +446,6 @@ filterFavoritesCheckbox.addEventListener('change', () => {
 });
 
 /**
-
-Feature 14 - Filter by favorite
-As a user
-I want to filter by favorite deals
-So that I can load only my favorite deals
 
 Feature 15 - Usable and pleasant UX
 As a user
