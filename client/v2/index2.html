@@ -4,27 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>🧱 Lego | Predictability of a lego set deal</title>
     <style>
-      .container {
-        display: flex;
-        height: 100vh; /* Ajuste la hauteur à la hauteur de la fenêtre */
-      }
-      .sidebar {
-        padding: 20px;
-        border-radius: var(--Corner-None, 0px) 12px 12px var(--Corner-None, 0px);
-        background: var(--Schemes-Secondary, #775651);
-        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
-      }
-      .sidebar img {
-          max-width: 100%; /* Pour que l'image ne dépasse pas la largeur de la sidebar */
-          height: auto; /* Pour conserver les proportions de l'image */
-          margin-bottom: 20px; /* Espace entre l'image et le titre */
-      }
-      #titreSidebar {
-        color: #ffffff; 
-      }
-      .content {
-        padding: 20px;
-      }
+      
       .deal {
         display: flex;
         align-items: flex-start;
@@ -45,12 +25,6 @@
         border-radius: 100px;
         background: var(--Schemes-Surface-Container-Low, #FFF0EE);
         box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-        margin: 0 12px;
-      }
-      #filters {
-      display: flex;
-      flex-direction: column; /* Aligne les éléments verticalement */
-      gap: 12px;
       }
       .button{
         display: flex;
@@ -63,8 +37,8 @@
         background: var(--M3-sys-light-primary, #904B40);
       }
       .deal img {
-        max-width: 150px;
-        margin-right: 20px; 
+        width: 340px;
+        height: 216px;
       }
       .sale{
         display: flex;
@@ -78,34 +52,6 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="sidebar">
-        <img src="./Images/LEGO_logo.png" />
-        <h2 id="titreSidebar">Filters</h2>
-        <div id="filters">
-          <button class ="buttonFilter best discount" type="button">By best discount</button>
-          <button class ="buttonFilter best most-commented" type="button">By most commented</button>
-          <button class ="buttonFilter hot-deals" type="button">By hot deals</button>
-        </div>
-        <div id="sort">
-        <h2 id="titreSidebar">Sort</h2>
-        <select name="sort" id="sort-select">
-          <option value="price-asc">Cheaper</option>
-          <option value="price-desc">Expensive</option>
-          <option value="date-asc">Recently published</option>
-          <option value="date-desc">Anciently published</option>
-        </select>
-        </div>
-      </div>
-      <div class="content">
-        <section id="deals">
-          </section>
-      </div>
-      <div class="content">
-        <section id="deals"></section>
-      </div>
-    
-    </div>
     <h1>Lego</h1>
     <section id="options">
       <div id="show">
@@ -119,6 +65,20 @@
       <div id="page">
         <label for="page-select">Go to page:</label>
         <select name="page" id="page-select"> </select>
+      </div>
+      <div id="filters">
+        <button class ="best discount" type="button">By best discount</button>
+        <button class ="best most-commented" type="button">By most commented</button>
+        <button class ="hot-deals" type="button">By hot deals</button>
+      </div>
+      <div id="sort">
+        <label for="sort-select">Sort:</label>
+        <select name="sort" id="sort-select">
+          <option value="price-asc">Cheaper</option>
+          <option value="price-desc">Expensive</option>
+          <option value="date-asc">Recently published</option>
+          <option value="date-desc">Anciently published</option>
+        </select>
       </div>
     </section>
     <section id="lego">
@@ -163,7 +123,7 @@
         <label for="filter-favorites-checkbox">Show Favorite Deals</label>
       </div>
     </section>
-    
+    <section id="deals"></section>
     <section id="VintedDeals"></section>
     <section id="favoriteDeals"></section>
     <script type="text/javascript" charset="UTF-8" src="utils.js"></script>

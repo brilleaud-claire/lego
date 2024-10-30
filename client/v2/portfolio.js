@@ -254,11 +254,11 @@ const renderDealsVinted = deals => {
     .map(deal => {
       const lifetime = calculateLifetime(deal.published); // Calculate lifetime for each deal
       return `
-      <div class="VintedDeals" id=${deal.uuid}>
+      <div class="sale VintedDeals" id=${deal.uuid}>
       <div style="display: flex; flex-direction: column; gap: 10px;">
           <a href="${deal.link}" target="_blank">${deal.title}</a>
         <span>Price: ${deal.price}</span>
-        <span>Lifetime: ${lifetime}</span> <!-- Display lifetime here -->
+        <span>Lifetime: ${lifetime}</span> 
         <span> </span>
       </div>
     `;
@@ -452,3 +452,4 @@ As a user
 I want to parse a usable and pleasant web page
 So that I can find valuable and useful content
 */
+//-----------------------------------------------------------------------------------------------------------------
