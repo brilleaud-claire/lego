@@ -33,7 +33,7 @@ let currentPaginationVinted = {};
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectFilter = document.querySelector('#filters');
-const selectSort = document.querySelector('#sort-select');
+const selectSort = document.querySelector('#sort');
 const selectLegoSetIds = document.querySelector('#lego-set-id-select');
 const sectionDeals= document.querySelector('#deals');
 const sectionDealsVinted= document.querySelector('#VintedDeals');
@@ -142,25 +142,34 @@ const calculatePriceStatistics = prices => {
 const renderDeals = deals => {
   const fragment = document.createDocumentFragment();
   const div = document.createElement('div');
+  div.classList.add('content'); // Add the "content" class
   const template = deals
     .map(deal => {
       return `
       <div class="deal" id=${deal.uuid}>
-        <img src="${deal.photo}" alt="Deal Image"/>
+        <div class="image-container">
+          <img src="${deal.photo}" alt="Deal Image">
+        </div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
-            <span>ID: ${deal.id}</span>
+          <span>ID: ${deal.id}</span>
           <a href="${deal.link}" target="_blank">${deal.title}</a>
-      </div>
-        <span>Price: ${deal.price}</span>
+        </div>
+        <div class="deal-info">
+          <div class="deal-info__label">Price :</div>
+          <div class="deal-info__value deal-info__price">${deal.retail}€</div>
+          <div class="deal-info__value">${deal.price}€</div>
+          <div class="deal-info__value deal-info__discount">${deal.discount}%</div>
+        </div>
         <button class="favorite-btn" data-deal-id="${deal.uuid}">Save as Favorite</button> 
       </div>
     `;
     })
     .join('');
-
+  
   div.innerHTML = template;
+  console.log(deals);
   fragment.appendChild(div);
-  sectionDeals.innerHTML = '<h2>Deals</h2>';
+  //sectionDeals.innerHTML = '<h2>Deals</h2>';
   sectionDeals.appendChild(fragment);
 
   // Add event listeners to the "Favorite" buttons
@@ -213,11 +222,12 @@ const renderFavoriteDeals = () => {
   renderDeals(favoriteDeals); // Use the same renderDeals function to show favorite deals
 };
 
+/*
 // Load favorite deals when the page loads
 document.addEventListener('DOMContentLoaded', () => {
   renderFavoriteDeals();
 });
-
+*/
 /**
  * Calculate the lifetime value (in days) from the published timestamp.
  * @param {Number} published - Unix timestamp of when the deal was published
@@ -375,7 +385,7 @@ selectLegoSetIds.addEventListener('change', async (event) => {
 
 /**
  * Sort by price and date
- */
+ 
 selectSort.addEventListener('change', async (event) => {
   const deals = await fetchDeals(currentPagination.currentPage, selectShow.value);
   const target = event.target;
@@ -398,6 +408,40 @@ selectSort.addEventListener('change', async (event) => {
   }
   render(currentDeals, currentPagination);
 });
+*/
+
+/**
+ * Filter by discount, hot deals and temperature
+ */
+selectSort.addEventListener('click', async (event) => {
+  const target = event.target;
+  const deals = await fetchDeals(currentPagination.currentPage, selectShow.value);
+  // Ensure the click was on a button
+  if (target.tagName !== 'BUTTON') return;
+
+  setCurrentDeals(deals);
+
+  if (target.classList.contains('price-asc')) {
+    // Fetch and filter by discount
+    currentDeals = currentDeals.sort((a, b) => a.price - b.price);
+  }
+  else if (target.classList.contains('price-desc')) {
+    // Fetch and filter by discount
+    currentDeals = currentDeals.sort((a, b) => b.price - a.price); 
+  } 
+  else if (target.classList.contains('date-asc')) {
+    // Fetch and filter by discount
+    currentDeals = currentDeals.sort((a, b) => b.published - a.published);
+  }
+  else if (target.classList.contains('date-desc')) {
+    // Fetch and filter by discount
+    currentDeals = currentDeals.sort((a, b) => a.published - b.published); 
+  }
+  // Update the UI with filtered results
+  
+  renderDeals(currentDeals, currentPagination);
+
+})
 
 /**
  * Filter by discount, hot deals and temperature

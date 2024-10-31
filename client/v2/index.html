@@ -9,30 +9,38 @@
         height: 100vh; /* Ajuste la hauteur à la hauteur de la fenêtre */
       }
       .sidebar {
+        flex : 0 0 20%;
         padding: 20px;
+        
         border-radius: var(--Corner-None, 0px) 12px 12px var(--Corner-None, 0px);
         background: var(--Schemes-Secondary, #775651);
         box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
       }
       .sidebar img {
-          max-width: 100%; /* Pour que l'image ne dépasse pas la largeur de la sidebar */
-          height: auto; /* Pour conserver les proportions de l'image */
-          margin-bottom: 20px; /* Espace entre l'image et le titre */
+        max-width: 100%; /* Pour que l'image ne dépasse pas la largeur de la sidebar */
+        height: auto; /* Pour conserver les proportions de l'image */
+        margin-bottom: 20px; /* Espace entre l'image et le titre */
       }
       #titreSidebar {
         color: #ffffff; 
       }
       .content {
-        padding: 20px;
+        flex : 1;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(100px,1fr)); /* Create 3 equal-width columns */
+        grid-template-rows: repeat(2, minmax(200px,1fr));
+        grid-auto-flow: row;
+        grid-auto-rows: minmax(100px, auto);
+        grid-gap: 20px; /* Space between columns and rows */
+        
       }
-      .deal {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 20px;
-        border: 1px solid #dddddd7c; 
-        border-radius: 5px; 
-        padding: 10px; 
-        background-color: #dddddd8f;
+      .deal { 
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        border-radius: 12px;
+        background: var(--M3-sys-light-surface-bright, #FFF8F6);
+        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
       }
       .buttonFilter{
         display: flex;
@@ -52,6 +60,11 @@
       flex-direction: column; /* Aligne les éléments verticalement */
       gap: 12px;
       }
+      #sort {
+      display: flex;
+      flex-direction: column; /* Aligne les éléments verticalement */
+      gap: 12px;
+      }
       .button{
         display: flex;
         height: 40px;
@@ -62,10 +75,16 @@
         border-radius: 100px;
         background: var(--M3-sys-light-primary, #904B40);
       }
-      .deal img {
-        max-width: 150px;
-        margin-right: 20px; 
+      .image-container {
+        text-align: center; /* Centre horizontalement */
       }
+      .image-container img {
+        max-width: 100%;
+        height: auto; /* Pour conserver les proportions */
+        display: block; /* Pour enlever les marges par défaut d'une image */
+        margin: 0 auto; /* Centre verticalement */
+      }
+      
       .sale{
         display: flex;
         align-items: flex-start;
@@ -74,6 +93,43 @@
         border-radius: 5px; 
         padding: 10px; 
         background-color: #dddddd8f;
+      }
+      .deal-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center; /* Center text vertically */
+      }
+
+      .deal-info__label {
+        color: #231918;
+        font-size: 16px;
+        font-family: Roboto;
+        line-height: 24px;
+        letter-spacing: 0.50px;
+        word-wrap: break-word;
+      }
+
+      .deal-info__value {
+        text-align: center;
+        color: #F5DDDA; /* Assuming this is the color for all values */
+        font-size: 16px;
+        font-family: Roboto;
+        line-height: 24px;
+        letter-spacing: 0.50px;
+        word-wrap: break-word;
+      }
+
+      .deal-info__price,
+      .deal-info__discount {
+        color: inherit; /* Inherit color from .deal-info__value */
+      }
+
+      .deal-info__price {
+        color: #3A0905;
+      }
+
+      .deal-info__discount {
+        color: #00B700;
       }
     </style>
   </head>
@@ -89,22 +145,15 @@
         </div>
         <div id="sort">
         <h2 id="titreSidebar">Sort</h2>
-        <select name="sort" id="sort-select">
-          <option value="price-asc">Cheaper</option>
-          <option value="price-desc">Expensive</option>
-          <option value="date-asc">Recently published</option>
-          <option value="date-desc">Anciently published</option>
+          <button class ="buttonFilter price-asc" type="button">Cheaper</button>
+          <button class ="buttonFilter price-desc" type="button">Expensive</button>
+          <button class ="buttonFilter date-asc" type="button">Recently published</button>
+          <button class ="buttonFilter date-desc" type="button">Anciently published</button>
         </select>
         </div>
       </div>
-      <div class="content">
-        <section id="deals">
-          </section>
+      <div id="deals">
       </div>
-      <div class="content">
-        <section id="deals"></section>
-      </div>
-    
     </div>
     <h1>Lego</h1>
     <section id="options">
@@ -163,7 +212,7 @@
         <label for="filter-favorites-checkbox">Show Favorite Deals</label>
       </div>
     </section>
-    
+
     <section id="VintedDeals"></section>
     <section id="favoriteDeals"></section>
     <script type="text/javascript" charset="UTF-8" src="utils.js"></script>
