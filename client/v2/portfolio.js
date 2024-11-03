@@ -150,8 +150,11 @@ const renderDeals = deals => {
         <div class="image-container">
           <img src="${deal.photo}" alt="Deal Image">
         </div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="deal-info">
           <span>ID: ${deal.id}</span>
+          <button class="favorite-btn" data-deal-id="${deal.uuid}">Save as Favorite</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
           <a href="${deal.link}" target="_blank">${deal.title}</a>
         </div>
         <div class="deal-info">
@@ -160,7 +163,9 @@ const renderDeals = deals => {
           <div class="deal-info__value">${deal.price}€</div>
           <div class="deal-info__value deal-info__discount">${deal.discount}%</div>
         </div>
-        <button class="favorite-btn" data-deal-id="${deal.uuid}">Save as Favorite</button> 
+        <div class="seeDealsContent">
+          <button class="button see-deals" data-see-deal-id="${deal.id}">See Deals</button>
+        </div>
       </div>
     `;
     })
@@ -180,7 +185,95 @@ const renderDeals = deals => {
       saveDealAsFavorite(dealId);
     });
   });
+
+  // Add event listeners to the "See Deals" buttons
+  const seeDealsButtons = document.querySelectorAll('.see-deals');
+  seeDealsButtons.forEach(button => {
+    button.addEventListener('click', async (event) => {
+      const dealId = event.target.getAttribute('data-see-deal-id');
+      
+      // Fetch the Vinted deals for this ID
+      const { deals, prices } = await fetchVintedDeals(dealId);
+
+      // Calculate price statistics
+      const indicators = calculatePriceStatistics(prices);
+      indicators.nbSales = deals.length;
+
+      // Open the new window with Vinted deals and indicators
+      openVintedDealsWindow(deals, indicators);
+    });
+  });
 };
+
+
+/**
+ * Open a new window to display Vinted deals for a specific LEGO set ID
+ * @param {String} legoSetId - ID of the LEGO set to fetch deals for
+ */
+// Fonction pour ouvrir une nouvelle fenêtre et afficher les deals et indicateurs Vinted
+const openVintedDealsWindow = async (deals, indicators) => {
+  // Ouvrir une nouvelle fenêtre
+  console.log(indicators);
+  const vintedWindow = window.open('', '_blank', 'width=800,height=600');
+
+  // Construire le contenu HTML de la nouvelle fenêtre
+  vintedWindow.document.write(`
+    <html>
+      <head>
+        <title>Vinted Deals</title>
+        <style>
+          body { display: flex; font-family: Arial, sans-serif; }
+          .container { display: flex; width: 100%; }
+          .indicators { width: 30%; padding: 20px; border-left: 2px solid #ddd; }
+          .deals-table { width: 70%; padding: 20px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+          th { background-color: #f2f2f2; }
+          a { color: #007bff; text-decoration: none; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="deals-table">
+            <h2>Vinted Deals</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Prix (€)</th>
+                  <th>Date de Publication</th>
+                  <th>Lien</th>
+                </tr>
+              </thead>
+              <tbody id="vintedDealsTableBody">
+              </tbody>
+            </table>
+          </div>
+          <div class="indicators">
+            <h2>Indicators</h2>
+            <p><strong>Nombre de ventes:</strong> <span id="nbSales">${indicators.nbSales}</span></p>
+            <p><strong>Prix moyen:</strong> <span id="averagePrice">${indicators.average}</span></p>
+            <p><strong>P25:</strong> <span id="p25Price">${indicators.p25}</span></p>
+            <p><strong>P50 (médiane):</strong> <span id="p50Price">${indicators.p50}</span></p>
+            <p><strong>P95:</strong> <span id="p95Price">${indicators.p95}</span></p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `);
+
+  // Injecter les données des Vinted Deals dans le tableau
+  const vintedDealsTableBody = vintedWindow.document.getElementById('vintedDealsTableBody');
+  deals.forEach(deal => {
+    const row = vintedWindow.document.createElement('tr');
+    row.innerHTML = `
+      <td>${deal.price}€</td>
+      <td>${new Date(deal.published * 1000).toLocaleDateString()}</td>
+      <td><a href="${deal.link}" target="_blank">Voir le deal</a></td>
+    `;
+    vintedDealsTableBody.appendChild(row);
+  });
+};
+
 
 /**
  * Save deal as favorite
