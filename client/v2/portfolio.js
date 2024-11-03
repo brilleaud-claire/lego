@@ -459,7 +459,7 @@ selectPage.addEventListener('change', async (event) => {
 
 /**
  * Select the id vinted to display
- */
+ 
 selectLegoSetIds.addEventListener('change', async (event) => {
   const { deals, prices } = await fetchVintedDeals(event.target.value);
 
@@ -474,7 +474,7 @@ selectLegoSetIds.addEventListener('change', async (event) => {
 
   setCurrentDealsVinted(deals);
   renderVinted(deals, currentPaginationVinted);
-});
+}); */
 
 /**
  * Sort by price and date
