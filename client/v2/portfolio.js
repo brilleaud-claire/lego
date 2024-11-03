@@ -152,21 +152,23 @@ const renderDeals = deals => {
         <div class="image-container">
           <img src="${deal.photo}" alt="Deal Image">
         </div>
-        <div class="deal-info">
-          <span>ID: ${deal.id}</span>
-          <button class="favorite-btn" data-deal-id="${deal.uuid}">Save as Favorite</button>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <a href="${deal.link}" target="_blank">${deal.title}</a>
-        </div>
-        <div class="deal-info">
-          <div class="deal-info__label">Price :</div>
-          <div class="deal-info__value deal-info__price">${deal.retail}€</div>
-          <div class="deal-info__value">${deal.price}€</div>
-          <div class="deal-info__value deal-info__discount">${deal.discount}%</div>
-        </div>
-        <div class="seeDealsContent">
-          <button class="button see-deals" data-see-deal-id="${deal.id}">See Deals</button>
+        <div class="deal-text">
+          <div class="deal-info">
+            <span>ID: ${deal.id}</span>
+            <button class="favorite-btn" data-deal-id="${deal.uuid}">Save as Favorite</button>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="${deal.link}" target="_blank">${deal.title}</a>
+          </div>
+          <div class="deal-info">
+            <div class="deal-info__label">Price :</div>
+            <div class="deal-info__value">${deal.retail}€</div>
+            <div class="deal-info__value deal-info__price">${deal.price}€</div>
+            <div class="deal-info__value deal-info__discount">${deal.discount}%</div>
+          </div>
+          <div class="seeDealsContent">
+            <button class="button see-deals" data-see-deal-id="${deal.id}">See Deals</button>
+          </div>
         </div>
       </div>
     `;

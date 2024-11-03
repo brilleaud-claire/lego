@@ -21,7 +21,7 @@
         justify-content: center;
       }
       .sidebar img {
-        max-width: 100%; /* Pour que l'image ne dépasse pas la largeur de la sidebar */
+        max-width: 50%; /* Pour que l'image ne dépasse pas la largeur de la sidebar */
         height: auto; /* Pour conserver les proportions de l'image */
         margin-bottom: 20px; /* Espace entre l'image et le titre */
       }
@@ -71,11 +71,14 @@
         /* align-self: stretch; */
       }
       .deal { 
+        display: flex;
+        flex-direction: column; /* Arrange elements vertically */
         
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         border-radius: 12px;
+        padding: 12px 12px;
         background: var(--M3-sys-light-surface-bright, #FFF8F6);
         box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
       }
@@ -120,23 +123,25 @@
         background: var(--M3-sys-light-primary, #904B40);
       }
       .image-container {
-        text-align: center; /* Centre horizontalement */
+        flex: 0 1 70%; /* 70% of the height */
+        display: flex;
+        align-items: center; /* Center the image vertically */
+        justify-content: center; /* Center the image horizontally */
       }
       .image-container img {
-        max-width: 80%;
+        max-width: 100%;
         height: auto; /* Pour conserver les proportions */
         display: block; /* Pour enlever les marges par défaut d'une image */
         margin: 0 auto; /* Centre verticalement */
       }
-      .sale{
+      .deal-text {
+        flex: 0 1 30%; /* 30% of the height */
         display: flex;
-        align-items: flex-start;
-        margin-bottom: 20px;
-        border: 1px solid #dddddd7c; 
-        border-radius: 5px; 
-        padding: 10px; 
-        background-color: #dddddd8f;
+        flex-direction: column;
+        gap: 6px; /* Space between each line */
+        margin-top: 12px; /* Adjust the space between image and text */
       }
+      
       .deal-info {
         display: flex;
         justify-content: space-between;
