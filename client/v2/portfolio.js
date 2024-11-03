@@ -140,6 +140,8 @@ const calculatePriceStatistics = prices => {
  * @param  {Array} deals - list of deals to display
  */
 const renderDeals = deals => {
+  const sectionDeals = document.getElementById('deals'); // Définissez l'endroit pour les deals
+  sectionDeals.innerHTML = ''; // Vide le conteneur
   const fragment = document.createDocumentFragment();
   const div = document.createElement('div');
   div.classList.add('content'); // Add the "content" class
@@ -422,8 +424,8 @@ const renderIndicators = pagination => {
 const render = (deals, pagination) => {
   renderDeals(deals);
   renderPagination(pagination);
-  renderIndicators(pagination);
-  renderLegoSetIds(deals)
+  //renderIndicators(pagination);
+  //renderLegoSetIds(deals)
 };
 
 const renderVinted = (deals, pagination) => {

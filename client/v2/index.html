@@ -10,11 +10,15 @@
       }
       .sidebar {
         flex : 0 0 20%;
-        padding: 20px;
-        
+        padding: 12px;
         border-radius: var(--Corner-None, 0px) 12px 12px var(--Corner-None, 0px);
         background: var(--Schemes-Secondary, #775651);
         box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+      }
+      .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .sidebar img {
         max-width: 100%; /* Pour que l'image ne dépasse pas la largeur de la sidebar */
@@ -25,14 +29,19 @@
         color: #ffffff; 
       }
       .content {
-        flex : 1;
+        /*flex : 1;*/
         display: grid;
         grid-template-columns: repeat(3, minmax(100px,1fr)); /* Create 3 equal-width columns */
-        grid-template-rows: repeat(2, minmax(200px,1fr));
+        /*grid-template-rows: repeat(2, minmax(200px,1fr));
         grid-auto-flow: row;
-        grid-auto-rows: minmax(100px, auto);
+        grid-auto-rows: minmax(100px, auto);*/
         grid-gap: 24px; /* Space between columns and rows */
-        margin: 6px;
+        width: 100%; /* Utilise toute la largeur */
+        padding: 10px;
+        margin: 0 auto;
+        overflow-y: auto; /* Ajout du défilement vertical */
+        max-height: 80vh; /* Limite la hauteur pour ne pas dépasser l'écran */
+        overflow-y: auto; /* Permet le défilement si besoin */
       }
       .contentShow{
         display: flex;
@@ -42,6 +51,12 @@
         flex: 1 0 0;
         align-self: stretch;
       }
+      .filters-container {
+        display: flex;
+        align-items: center; /* Aligne verticalement au centre */
+        gap: 10px; /* Espace entre la checkbox et le sélecteur */
+        
+      }
       .contentShowPage{
         display: flex;
         padding: 24px 0px;
@@ -49,9 +64,11 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        flex: 1 0 0;
+        flex: 1;
         gap: 12px;
-        align-self: stretch;
+        overflow-y: auto; /* Ajout du défilement vertical */
+        width: 100%; /* Ajuste la largeur */
+        /* align-self: stretch; */
       }
       .deal { 
         
@@ -162,7 +179,9 @@
   <body>
     <div class="container">
       <div class="sidebar">
-        <img src="./Images/LEGO_logo.png" />
+        <div class="logo-container">
+          <img src="./Images/LEGO_logo.png" />
+        </div>
         <h2 id="titreSidebar">Filters</h2>
         <div id="filters">
           <button class ="buttonFilter best discount" type="button">By best discount</button>
@@ -180,14 +199,20 @@
       </div>
       <div class = "contentShowPage">
         <div class = "contentShow">
-          <section id="show">
+          <section id="show" class="filters-container">
             <label for="show-select">Show:</label>
             <select name="show" id="show-select">
               <option value="6">6</option>
               <option value="12">12</option>
               <option value="24">24</option>
             </select>
+            <div>
+              <input type="checkbox" id="filter-favorites-checkbox">
+              <label for="filter-favorites-checkbox">Show Favorite Deals</label>
+            </div>
           </section>
+          
+
           <div id="deals">
           </div>
         </div>
@@ -197,6 +222,7 @@
         </div>
       </div>
     </div>
+    
     <script type="text/javascript" charset="UTF-8" src="utils.js"></script>
     <script type="text/javascript" charset="UTF-8" src="portfolio.js"></script>
   </body>
