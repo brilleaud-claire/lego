@@ -1,6 +1,7 @@
 //const fetch = require('node-fetch');
 const fetch = (...args) => import('node-fetch').then(module => module.default(...args));
 const cheerio = require('cheerio');
+const fs = require('fs'); // Module fs pour écrire des fichiers
 
 /**
  * Parse webpage data response
@@ -8,26 +9,48 @@ const cheerio = require('cheerio');
  * @return {Object} deal
  */
 const parse = data => {
-  const $ = cheerio.load(data, {'xmlMode': true});
+  const $ = cheerio.load(data, {'xmlMode': true}, true);
 
-  return $('div.threadGrid-title js-contextual-message-placeholder')
-    .map((i, element) => {
-      const price = parseFloat(
+  return $('article.thread')
+    .map((_, element) => {
+      const content = JSON.parse(
         $(element)
-          .find('span.vAlign--all-tt')
-          .text()
-      );
+          .find('div.js-vue2').attr("data-vue2")  
+      ).props.thread;
       
-      const discount = Math.abs(parseInt(
-        $(element)
-          .find('span.text--color-charcoal space--ml-1 size--all-l size--fromW3-xl')
-          .text()
-      ));
+      const imgUrl = JSON.parse(
+        $(element).find("div.threadGrid-image div.js-vue2").attr("data-vue2")
+      ).props.threadImageUrl;
+
+      const title = content.title;
+      const link = content.link;
+      const linkDealLabs = content.shareableLink;
+      const price = content.price;
+      const retail = content.nextBestPrice;
+      let discount = 0.0;
+      if(retail!=0.0){
+        discount = Math.round(((1-(price/retail))*100) * 100) / 100;
+      }
+      const commentCount = content.commentCount;
+      const temperature = content.temperature;
+      const published = content.publishedAt;
+
+      const idPattern = /\d{5}/;
+      const foundLegoID=title.match(idPattern);
+      const legoID=foundLegoID===null ? "": foundLegoID[0];
 
       return {
         discount,
+        link,
         price,
-        'title': $(element).attr('title'),
+        title,
+        imgUrl,
+        legoID,
+        retail,
+        commentCount,
+        temperature,
+        published,
+        linkDealLabs,
       };
     })
     .get();
@@ -49,8 +72,21 @@ module.exports.scrape = async url => {
 
   if (response.ok) {
     const body = await response.text();
-    console.log("Je suis rentrée dans le site");
-    return parse(body);
+    const dealLabs = parse(body)
+
+    if (dealLabs.length > 0) { // Assurez-vous qu'il y a des données à écrire
+      fs.writeFileSync('deals.json', JSON.stringify(dealLabs, null, 2), 'utf-8', (err) => {
+        if (err) {
+          console.error("Erreur lors de l'écriture du fichier JSON:", err);
+        } else {
+          console.log("Données enregistrées dans deals.json");
+        }
+      });
+      
+    } else {
+      console.log("Aucune donnée extraite pour l'enregistrement.");
+    }
+    return dealLabs;
   }
 
   console.error(response);

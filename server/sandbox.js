@@ -18,12 +18,12 @@ async function sandbox (website = 'https://www.avenuedelabrique.com/nouveautes-l
   }
 }
 */
-async function sandbox (website = 'https://www.dealabs.com/groupe/lego') {
+async function sandbox (website = 'https://www.dealabs.com/groupe/lego?hide_expired=true') {
   try {
     console.log(`🕵️‍♀️  browsing ${website} website`);
 
-    const avenuedelabrique = await import('./websites/dealabs.js');
-    const deals = await avenuedelabrique.scrape(website);
+    const dealabs = await import('./websites/dealabs.js');
+    const deals = await dealabs.scrape(website);
 
     console.log(deals);
     console.log('done');

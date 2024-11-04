@@ -164,7 +164,7 @@ const renderDeals = deals => {
             <div class="deal-info__label">Price :</div>
             <div class="deal-info__value">${deal.retail}€</div>
             <div class="deal-info__value deal-info__price">${deal.price}€</div>
-            <div class="deal-info__value deal-info__discount">${deal.discount}%</div>
+            <div class="deal-info__value deal-info__discount">-${deal.discount}%</div>
           </div>
           <div class="seeDealsContent">
             <button class="button see-deals" data-see-deal-id="${deal.id}">See Deals</button>
