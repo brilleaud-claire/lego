@@ -131,8 +131,10 @@ module.exports.scrape = async (url, browser) => {
   
   if (Array.isArray(VintedDeals)) {
     const deals = VintedDeals.map((deal) => ({
+      id : extractedID,
       title: deal.title,
       price: deal.price ? `${deal.price.amount}` : "N/A",
+      url : deal.url,
     }));
 
     await page.close();
