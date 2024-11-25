@@ -91,6 +91,34 @@ async function findRecentSales(collection, weeks = 3) {
   return await collection.find({ date: { $gte: threeWeeksAgoUnix } }).toArray();
 }
 
+
+// Fonction pour initialiser la connexion MongoDB
+async function initialize(collectionName) {
+  try {
+    
+    await client.connect(); // Connexion au cluster
+    console.log("[MongoDB connection] SUCCESS");
+
+    const db = client.db(MONGODB_DB_NAME);
+    const collection = db.collection(collectionName);
+    return { client, collection }; // Retourner le client et la collection
+  } catch (err) {
+    console.error("[MongoDB connection] ERROR:", err);
+    throw err;
+  }
+}
+
+module.exports = {
+  initialize,
+  findBestDiscountDeals,
+  findMostCommentedDeals,
+  findDealsSortedByPrice,
+  findDealsSortedByDate,
+  findSalesByLegoSetId,
+  findRecentSales
+};
+
+/*
 async function main() {
   const db = client.db(MONGODB_DB_NAME);
   const collection = db.collection('dealabs');
@@ -105,8 +133,9 @@ async function main() {
 
   await client.close();
 }
+  */
 //Mongo();
-main();
+//main();
 
 
 
