@@ -77,15 +77,18 @@ async function findDealsSortedByDate(collection, order = -1) {
 }
 
 async function findSalesByLegoSetId(collection, legoSetId) {
-  return await collection.find({ legoSetId: legoSetId }).toArray();
+  return await collection.find({ id: legoSetId }).toArray();
 }
 
 async function findRecentSales(collection, weeks = 3) {
-  const currentDate = new Date();
-  const pastDate = new Date(currentDate);
-  pastDate.setDate(currentDate.getDate() - weeks * 7);
+  // Date actuelle en secondes Unix
+  const currentDateUnix = Math.floor(Date.now() / 1000);
 
-  return await collection.find({ scrapedDate: { $gte: pastDate } }).toArray();
+  // Date de seuil (3 semaines avant aujourd'hui)
+  const threeWeeksAgoUnix = currentDateUnix - weeks * 7 * 24 * 60 * 60;
+
+  // Recherche des deals avec des dates >= threeWeeksAgoUnix
+  return await collection.find({ date: { $gte: threeWeeksAgoUnix } }).toArray();
 }
 
 async function main() {
@@ -97,10 +100,12 @@ async function main() {
   //console.log("Most Commented Deals:", await findMostCommentedDeals(collection));
   //console.log("Deals Sorted by Price (asc):", await findDealsSortedByPrice(collection, 1));
   //console.log("Deals Sorted by Date (desc):", await findDealsSortedByDate(collection, -1));
-  console.log("Sales for LEGO Set ID 77092:", await findSalesByLegoSetId(collection2, 77092));
-  //console.log("Sales Scraped in Last 3 Weeks:", await findRecentSales(collection, 3));
-}
+  //console.log("Sales for LEGO Set ID 21061:", await findSalesByLegoSetId(collection2, "21061"));
+  console.log("Sales Scraped in Last 3 Weeks:", await findRecentSales(collection2, 1));
 
+  await client.close();
+}
+//Mongo();
 main();
 
 

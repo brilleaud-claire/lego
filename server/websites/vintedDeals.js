@@ -135,6 +135,7 @@ module.exports.scrape = async (url, browser) => {
       title: deal.title,
       price: deal.price ? `${deal.price.amount}` : "N/A",
       url : deal.url,
+      date : deal.photo.high_resolution.timestamp,
     }));
 
     await page.close();
