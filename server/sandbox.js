@@ -107,11 +107,13 @@ async function processVintedDeals(legoDeals) {
     for (const deal of legoDeals) {
       
       console.log(`🔍 Searching Vinted for Lego ID: ${deal.legoID} (${deal.title})`);
+      if(deal.legoID!=''){
+        const vintedURL = `https://www.vinted.fr/catalog?search_text=lego%20${deal.legoID}&time=1730733272&page=1`;
+        const deals = await vintedScraper.scrape(vintedURL, browser);
+        VintedDeals.push(deals);
+        console.log(`Vinted Deals for Lego ID ${deal.legoID}:`, deals);
 
-      const vintedURL = `https://www.vinted.fr/catalog?search_text=lego%20${deal.legoID}&time=1730733272&page=1`;
-      const deals = await vintedScraper.scrape(vintedURL, browser);
-      VintedDeals.push(deals);
-      console.log(`Vinted Deals for Lego ID ${deal.legoID}:`, deals);
+      }
     }
     // Enregistrer les résultats dans un fichier JSON
     const outputPath = './combined_VintedDeals.json';
