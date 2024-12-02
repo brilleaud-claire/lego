@@ -111,6 +111,7 @@ const fetchDeals2 = async (id = "75368") => {
  * @param {Object} browser - Puppeteer browser instance
  * @returns {Object|null} - Vinted deal data (price & title) or null on error
  */
+/*
 module.exports.scrape = async (url, browser) => {
   const page = await browser.newPage();
   const cookieString = await getVintedCookies(page);
@@ -146,3 +147,47 @@ module.exports.scrape = async (url, browser) => {
     return [];
   }
 };
+*/
+module.exports.scrape = async (url, browser) => {
+  const page = await browser.newPage();
+  const cookieString = await getVintedCookies(page);
+
+  const regex = /lego%20(\d+)/;
+  const match = url.match(regex);
+  let extractedID = "";
+  if (match) {
+    extractedID = match[1];
+    console.log("Extracted ID:", extractedID);
+  } else {
+    console.error("ID not found in the URL");
+  }
+
+  // Fetch Vinted deals using extracted ID
+  const VintedDeals = await fetchDeals(extractedID, cookieString, page);
+
+  if (Array.isArray(VintedDeals)) {
+    const deals = VintedDeals.map((deal) => {
+      // Validate that the deal has all necessary properties
+      if (!deal || !deal.photo || !deal.photo.high_resolution) {
+        console.warn(`Skipping incomplete deal: ${JSON.stringify(deal)}`);
+        return null; // Skip this deal if it's incomplete
+      }
+
+      return {
+        id: extractedID,
+        title: deal.title || "No title available",
+        price: deal.price ? `${deal.price.amount}` : "N/A",
+        url: deal.url || "No URL available",
+        date: deal.photo.high_resolution.timestamp || "No timestamp available",
+      };
+    }).filter(Boolean); // Remove any null entries from the array
+
+    await page.close();
+    return deals;
+  } else {
+    console.log("No data found for the URL.");
+    await page.close();
+    return [];
+  }
+};
+

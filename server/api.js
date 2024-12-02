@@ -14,26 +14,47 @@ app.use(helmet());
 
 app.options('*', cors());
 
-app.get('/deals/', async (request, response) => {
-  const db = require("./mangodb");
-  const collectionName = "dealabs";
+const { calculateLimitAndOffset, paginate } = require('paginate-info');
+
+app.get('/deals/', async (req, res) => {
+  const db = require('./mangodb');
+  const collectionName = 'dealabs';
+
+  // Récupérer les paramètres de pagination
+  const { page = 1, limit = 10 } = req.query;
+  const parsedPage = Math.max(parseInt(page), 1); // Numéro de page, minimum = 1
+  const parsedLimit = Math.max(parseInt(limit), 1); // Limite par page, minimum = 1
+
+  // Calculer l'offset et la limite
+  const { limit: pageLimit, offset } = calculateLimitAndOffset(parsedPage, parsedLimit);
+
   try {
     // Initialiser la connexion MongoDB
     const { client, collection } = await db.initialize(collectionName);
 
-    
-    // Récupérer et trier les données
+    // Récupérer le nombre total d'éléments
+    const totalItems = await collection.countDocuments();
+
+    // Récupérer les données paginées
     const dealabs = await collection.find({})
+      .skip(offset) // Ignorer les éléments jusqu'à l'offset
+      .limit(pageLimit) // Limiter le nombre d'éléments récupérés
       .toArray();
+
+    // Calculer les métadonnées de pagination
+    const paginationInfo = paginate(parsedPage, totalItems, parsedLimit);
 
     // Fermer la connexion MongoDB
     await client.close();
 
-    // Envoyer la réponse au client
-    response.json(dealabs);
+    // Retourner les résultats avec la pagination
+    res.json({
+      results: dealabs,
+      pagination: paginationInfo,
+    });
   } catch (err) {
-    console.error("Unexpected error:", err);
-    response.status(500).json({ error: "An unexpected error occurred" });
+    console.error('Unexpected error:', err);
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
@@ -41,20 +62,17 @@ app.get('/deals/search', async (req, res) => {
   const db = require('./mangodb');
   const collectionName = 'dealabs';
 
-  const { limit = 12, price, date, filterBy } = req.query;
-  const parsedLimit = parseInt(limit);
+  const { page = 1, limit = 10, price, date, filterBy } = req.query;
+  const parsedPage = Math.max(parseInt(page), 1);
+  const parsedLimit = Math.max(parseInt(limit), 1);
   const parsedPrice = parseFloat(price);
   const parsedDate = date ? new Date(date).getTime() : undefined; //AAAA-JJ-MM
+  const { limit: pageLimit, offset } = calculateLimitAndOffset(parsedPage, parsedLimit);
 
-  console.log('Parsed parameters:', { parsedLimit, parsedPrice, parsedDate, filterBy });
 
   try {
     const { client, collection } = await db.initialize(collectionName);
-
-    // Debug : Afficher toutes les données
-    //const allData = await collection.find({}).toArray();
-    //console.log('All Data:', allData);
-
+    
     // Construire le filtre
     const query = {};
     if (parsedPrice && parsedPrice > 0) query.price = { $lte: parsedPrice, $gt: 0 };
@@ -67,20 +85,17 @@ app.get('/deals/search', async (req, res) => {
 
     console.log('MongoDB Query:', query, 'Sort:', sort);
 
-    // Récupérer les données
+    const totalItems = await collection.countDocuments(query);
+    const paginationInfo = paginate(parsedPage, totalItems, parsedLimit);
     const results = await collection.find(query)
       .sort(sort)
-      .limit(parsedLimit)
+      .skip(offset)
+      .limit(pageLimit)
       .toArray();
 
-    //console.log('Results:', results);
     await client.close();
 
-    res.json({
-      limit: parsedLimit,
-      total: results.length,
-      results
-    });
+    res.json({ results, pagination: paginationInfo });
   } catch (err) {
     console.error('Unexpected error:', err);
     res.status(500).json({ error: 'An unexpected error occurred' });
@@ -119,8 +134,6 @@ app.get('/sales/search', async (req, res) => {
     res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
-
-
 
 app.listen(PORT);
 

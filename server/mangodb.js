@@ -1,8 +1,10 @@
 const fs = require('fs');
+require('dotenv').config();
 //const {MongoClient} = require('mongodb');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const MONGODB_DB_NAME = 'lego';
-const uri = "mongodb+srv://clairebrilleaud:dgHLzdoa54@clusterlego.jrtz9.mongodb.net/?retryWrites=true&w=majority&appName=ClusterLego";
+const uri = process.env.MONGO_URI;
+console.log(process.env.MONGO_URI);
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -91,7 +93,8 @@ async function findRecentSales(collection, weeks = 3) {
   return await collection.find({ date: { $gte: threeWeeksAgoUnix } }).toArray();
 }
 
-
+Mongo();
+//main(); 
 // Fonction pour initialiser la connexion MongoDB
 async function initialize(collectionName) {
   try {
@@ -134,8 +137,7 @@ async function main() {
   await client.close();
 }
   */
-//Mongo();
-//main();
+
 
 
 
