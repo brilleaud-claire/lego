@@ -44,7 +44,7 @@ app.get('/deals/search', async (req, res) => {
   const { limit = 12, price, date, filterBy } = req.query;
   const parsedLimit = parseInt(limit);
   const parsedPrice = parseFloat(price);
-  const parsedDate = date ? new Date(date).getTime() : undefined;
+  const parsedDate = date ? new Date(date).getTime() : undefined; //AAAA-JJ-MM
 
   console.log('Parsed parameters:', { parsedLimit, parsedPrice, parsedDate, filterBy });
 
@@ -52,7 +52,7 @@ app.get('/deals/search', async (req, res) => {
     const { client, collection } = await db.initialize(collectionName);
 
     // Debug : Afficher toutes les données
-    const allData = await collection.find({}).toArray();
+    //const allData = await collection.find({}).toArray();
     //console.log('All Data:', allData);
 
     // Construire le filtre
@@ -73,7 +73,7 @@ app.get('/deals/search', async (req, res) => {
       .limit(parsedLimit)
       .toArray();
 
-    console.log('Results:', results);
+    //console.log('Results:', results);
     await client.close();
 
     res.json({
@@ -86,8 +86,6 @@ app.get('/deals/search', async (req, res) => {
     res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
-
-
 
 
 app.get('/sales/search', async (req, res) => {
