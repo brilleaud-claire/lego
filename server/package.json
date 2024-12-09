@@ -5,6 +5,7 @@
   "main": "index.js",
   "repository": "git@github.com:92bondstreet/lego.git",
   "dependencies": {
+    "@vercel/speed-insights": "^1.1.0",
     "cheerio": "^1.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

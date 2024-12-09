@@ -4,21 +4,26 @@
 /**
 Description of the available api
 GET https://lego-api-blue.vercel.app/deals
-
+GET https://lego-server-claire.vercel.app/deals/search
 Search for specific deals
 
 This endpoint accepts the following optional query string parameters:
 
 - `page` - page of deals to return
-- `size` - number of deals to return
+- `limit` - number of deals to return
+- `price` - under a certain price
+- `date` - sort by date
+- `best-discount` - sort by discount
+- `most-commented` - sort by most commented
 
 GET https://lego-api-blue.vercel.app/sales
+GET https://lego-server-claire.vercel.app/sales/search
 
 Search for current Vinted sales for a given lego set id
 
 This endpoint accepts the following optional query string parameters:
 
-- `id` - lego set id to return
+- `legoSetId` - lego set id to return
 */
 
 // current deals on the page

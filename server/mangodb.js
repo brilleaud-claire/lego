@@ -93,7 +93,7 @@ async function findRecentSales(collection, weeks = 3) {
   return await collection.find({ date: { $gte: threeWeeksAgoUnix } }).toArray();
 }
 
-Mongo();
+//Mongo();
 //main(); 
 // Fonction pour initialiser la connexion MongoDB
 async function initialize(collectionName) {

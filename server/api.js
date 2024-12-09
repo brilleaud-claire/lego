@@ -2,6 +2,7 @@ const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
 
+
 const PORT = 8092;
 
 const app = express();
@@ -16,6 +17,10 @@ app.options('*', cors());
 
 const { calculateLimitAndOffset, paginate } = require('paginate-info');
 
+app.get('/', (request, response) => {
+  response.send({'ack': true});
+});
+
 app.get('/deals/', async (req, res) => {
   const db = require('./mangodb');
   const collectionName = 'dealabs';
@@ -24,14 +29,14 @@ app.get('/deals/', async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const parsedPage = Math.max(parseInt(page), 1); // Numéro de page, minimum = 1
   const parsedLimit = Math.max(parseInt(limit), 1); // Limite par page, minimum = 1
-
+  
   // Calculer l'offset et la limite
   const { limit: pageLimit, offset } = calculateLimitAndOffset(parsedPage, parsedLimit);
 
   try {
     // Initialiser la connexion MongoDB
     const { client, collection } = await db.initialize(collectionName);
-
+    
     // Récupérer le nombre total d'éléments
     const totalItems = await collection.countDocuments();
 
