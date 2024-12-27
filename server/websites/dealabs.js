@@ -76,9 +76,12 @@ module.exports.scrapeMultiplePages = async (baseUrl, maxPages = 5) => {
       }
     });
 
+
     if (response.ok) {
       const body = await response.text();
-      const dealLabs = parse(body);
+      let dealLabs = parse(body);
+
+      dealLabs = dealLabs.filter(deal => deal.legoID);
 
       if (dealLabs.length > 0) {
         allDeals = [...allDeals, ...dealLabs]; // Ajouter les nouveaux résultats
