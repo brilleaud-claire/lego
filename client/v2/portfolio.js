@@ -101,19 +101,32 @@ const fetchVintedDeals = async (legoSetId = "21345") => {
   try {
     const response = await fetch(`https://lego-server-claire.vercel.app/sales/search?legoID=${legoSetId}`);
     const body = await response.json();
-
+    console.log(`https://lego-server-claire.vercel.app/sales/search?legoID=${legoSetId}`);
     if (response.ok) {
-      const prices = body.results.map(deal => deal.price);
-      return { deals: body.results, prices };
+      // Extraire les "vintedDeals" depuis chaque élément dans "results"
+      const deals = body.results.flatMap(item => item.vintedDeals.map(deal => ({
+        id: deal.id,
+        title: deal.title,
+        price: deal.price,
+        url: deal.url,
+        date: deal.date
+      })));
+      
+      // calculer les prix pour les indicateurs
+      const prices = deals.map(deal => parseFloat(deal.price));
+      
+      return { deals, prices };
     } else {
-      console.error(body);
-      return { deals: currentDealsVinted, prices: [] };
+      console.error("Erreur dans la récupération des données:", body);
+      return { deals: [], prices: [] };
     }
   } catch (error) {
-    console.error(error);
-    return { deals: currentDealsVinted, prices: [] };
+    console.error("Erreur lors de l'appel API:", error);
+    return { deals: [], prices: [] };
   }
 };
+
+
 
 /**
  * Render list of deals
@@ -121,12 +134,11 @@ const fetchVintedDeals = async (legoSetId = "21345") => {
  */
 const renderDeals = deals => {
   // Filtrer les deals avec un legoID
-  const filteredDeals = deals.filter(deal => deal.legoID);
   sectionDeals.innerHTML = '';
   const fragment = document.createDocumentFragment();
   const div = document.createElement('div');
   div.classList.add('content');
-  div.innerHTML = filteredDeals
+  div.innerHTML = deals
     .map(deal => {
       return `
       <div class="deal" id=${deal.uuid}>
@@ -175,7 +187,7 @@ const renderDeals = deals => {
       
       // Fetch the Vinted deals for this ID
       const { deals, prices } = await fetchVintedDeals(dealId);
-
+      console.log(dealId);
       // Calculate price statistics
       const indicators = calculatePriceStatistics(prices);
       indicators.nbSales = deals.length;
@@ -301,9 +313,26 @@ const saveDealAsFavorite = (dealId) => {
  */
 // Fonction pour ouvrir une nouvelle fenêtre et afficher les deals et indicateurs Vinted
 const openVintedDealsWindow = async (deals, indicators) => {
+  // Vérification de la présence des données
+  if (!deals || !Array.isArray(deals) || deals.length === 0) {
+    console.error("Aucun deal trouvé");
+    return;
+  }
+
+  if (!indicators) {
+    console.error("Aucun indicateur trouvé");
+    return;
+  }
+
   // Ouvrir une nouvelle fenêtre
   console.log(indicators);
   const vintedWindow = window.open('', '_blank', 'width=800,height=600');
+
+  // Vérification de l'ouverture correcte de la fenêtre
+  if (!vintedWindow) {
+    console.error("Impossible d'ouvrir la fenêtre");
+    return;
+  }
 
   // Construire le contenu HTML de la nouvelle fenêtre
   vintedWindow.document.write(`
@@ -352,16 +381,20 @@ const openVintedDealsWindow = async (deals, indicators) => {
 
   // Injecter les données des Vinted Deals dans le tableau
   const vintedDealsTableBody = vintedWindow.document.getElementById('vintedDealsTableBody');
+  
   deals.forEach(deal => {
-    const row = vintedWindow.document.createElement('tr');
-    row.innerHTML = `
-      <td>${deal.price}€</td>
-      <td>${new Date(deal.date * 1000).toLocaleDateString()}</td>
-      <td><a href="${deal.url}" target="_blank">Voir le deal</a></td>
-    `;
-    vintedDealsTableBody.appendChild(row);
+    if (deal.price && deal.date && deal.url) {
+      const row = vintedWindow.document.createElement('tr');
+      row.innerHTML = `
+        <td>${deal.price}€</td>
+        <td>${new Date(deal.date * 1000).toLocaleDateString()}</td>
+        <td><a href="${deal.url}" target="_blank">Voir le deal</a></td>
+      `;
+      vintedDealsTableBody.appendChild(row);
+    }
   });
 };
+
 
 /**
  * Calculate statistics like average, p25, p50 (median), p95.
@@ -445,7 +478,7 @@ selectFilter.addEventListener('click', async (event) => {
   }
   else if (target.classList.contains('most-commented')) {
     // Fetch and filter by most commented
-    currentDeals = currentDeals.filter(item => item.comments >=15);
+    currentDeals = currentDeals.filter(item => item.commentCount >=15);
   } 
   else if (target.classList.contains('hot-deals')) {
     // Fetch and filter by hot deals

@@ -112,14 +112,14 @@ app.get('/sales/search', async (req, res) => {
   const db = require('./mangodb');
   const collectionName = 'vinted';
 
-  const { limit = 12, legoSetId } = req.query;
+  const { limit = 12, legoID } = req.query;
 
   try {
     const { client, collection } = await db.initialize(collectionName);
 
     // Construire le filtre
     const query = {};
-    if (legoSetId) query.id = legoSetId;
+    if (legoID) query.legoID = legoID;
 
     // Récupérer les données triées par date décroissante
     const results = await collection.find(query)
