@@ -329,13 +329,8 @@ const openVintedDealsWindow = async (deals, indicators, priceDealab) => {
   const averageLifetime = calculateAverageLifetime(deals);
 
   // Calculer l'indicateur good deal 
-  // si goodDealValue<0 c'est vraiment pas bon (on a pas de marge), si 0.5<goodDealValue<1.5 c'est pas mal, si goodDealValue>1.5 c'est très bien
   const x = indicators.average;
   const goodDealValue = calculateGoodDeal(x, priceDealab, averageLifetime);
-
-  // Calculer l'indicateur "Good Deal" (utilise P50 comme référence par défaut)
-  //const dealsWithGoodDeal = calculateGoodDeals(deals, indicators.p50, averageLifetime);
-
 
   // Ouvrir une nouvelle fenêtre
   const vintedWindow = window.open('', '_blank', 'width=800,height=600');
@@ -343,6 +338,20 @@ const openVintedDealsWindow = async (deals, indicators, priceDealab) => {
   if (!vintedWindow) {
     console.error("Impossible d'ouvrir la fenêtre");
     return;
+  }
+
+  // Calculer la couleur de la pastille
+  let badgeClass = '';
+  let badgetitle = '';
+  if (goodDealValue < 0) {
+    badgeClass = 'badge-red';
+    badgetitle = 'Very bad deal (no marge on the price)';
+  } else if (goodDealValue >= 0 && goodDealValue < 0.5) {
+    badgeClass = 'badge-orange';
+    badgetitle = 'Not so good a deal (Not a big marge or the article are here for a long time)';
+  } else if (goodDealValue >= 0.5) {
+    badgeClass = 'badge-green';
+    badgetitle = 'This is a sweet deal my friend !';
   }
 
   // Construire le contenu HTML de la nouvelle fenêtre
@@ -355,6 +364,12 @@ const openVintedDealsWindow = async (deals, indicators, priceDealab) => {
           .container { display: flex; width: 100%; }
           .indicators { width: 30%; padding: 20px; border-left: 2px solid #ddd; }
           .deals-table { width: 70%; padding: 20px; }
+          .good-deal-indicator {display: flex;flex-direction: column;align-items: center; }
+          .good-deal-label {font-size: 1rem;margin-bottom: 0.5rem;}
+          .badge {width: 20px;height: 20px;border-radius: 50%;border: 1px solid #ccc;}
+          .badge-red {background-color: red; }
+          .badge-orange { background-color: orange; }
+          .badge-green {background-color: green; }
           table { width: 100%; border-collapse: collapse; }
           th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
           th { background-color: #f2f2f2; }
@@ -372,7 +387,6 @@ const openVintedDealsWindow = async (deals, indicators, priceDealab) => {
                   <th>Publication Date</th>
                   <th>Link</th>
                   <th>Lifetime</th>
-                  <!--<th>Good Deal</th>-->
                 </tr>
               </thead>
               <tbody id="vintedDealsTableBody">
@@ -388,6 +402,10 @@ const openVintedDealsWindow = async (deals, indicators, priceDealab) => {
             <p><strong>P95 (top of the basket):</strong> <span id="p95Price">${indicators.p95} €</span></p>
             <p><strong>Average lifetime:</strong> <span id="averageLifetime">${averageLifetime} jours</span></p>
             <p><strong>Good Deal:</strong> <span id="averageGoodDeal">${goodDealValue}</span></p>
+            <div class="good-deal-indicator">
+              <p class="good-deal-label">${badgetitle}</p>
+              <div class="badge ${badgeClass}"></div>
+            </div>
           </div>
         </div>
       </body>
@@ -406,7 +424,6 @@ const openVintedDealsWindow = async (deals, indicators, priceDealab) => {
         <td>${new Date(deal.date * 1000).toLocaleDateString()}</td>
         <td><a href="${deal.url}" target="_blank">Go to vinted</a></td>
         <td>${lifetime}</td>
-        <!--<td>${deal.goodDeal}</td>-->
       `;
       vintedDealsTableBody.appendChild(row);
     }
