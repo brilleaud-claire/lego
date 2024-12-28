@@ -160,7 +160,7 @@ const renderDeals = deals => {
             <div class="deal-info__value deal-info__discount">-${deal.discount}%</div>
           </div>
           <div class="seeDealsContent">
-            <button class="button see-deals" data-see-deal-id="${deal.legoID}">See Deals</button>
+            <button class="button see-deals" data-see-deal-id="${deal.legoID}" data-price="${deal.price}">See Deals</button>
           </div>
         </div>
       </div>
@@ -184,6 +184,7 @@ const renderDeals = deals => {
   seeDealsButtons.forEach(button => {
     button.addEventListener('click', async (event) => {
       const dealId = event.target.getAttribute('data-see-deal-id');
+      const priceDealab = event.target.getAttribute('data-price');
       
       // Fetch the Vinted deals for this ID
       const { deals, prices } = await fetchVintedDeals(dealId);
@@ -193,7 +194,8 @@ const renderDeals = deals => {
       indicators.nbSales = deals.length;
 
       // Open the new window with Vinted deals and indicators
-      openVintedDealsWindow(deals, indicators);
+      console.log(dealId, priceDealab);
+      openVintedDealsWindow(deals, indicators, priceDealab);
     });
   });
 };
@@ -307,13 +309,8 @@ const saveDealAsFavorite = (dealId) => {
 };
 
 
-/**
- * Open a new window to display Vinted deals for a specific LEGO set ID
- * @param {String} legoSetId - ID of the LEGO set to fetch deals for
- */
-// Fonction pour ouvrir une nouvelle fenêtre et afficher les deals et indicateurs Vinted
-const openVintedDealsWindow = async (deals, indicators) => {
-  // Vérification de la présence des données
+const openVintedDealsWindow = async (deals, indicators, priceDealab) => {
+  // Vérification des données
   if (!deals || !Array.isArray(deals) || deals.length === 0) {
     console.error("Aucun deal trouvé");
     return;
@@ -323,12 +320,26 @@ const openVintedDealsWindow = async (deals, indicators) => {
     console.error("Aucun indicateur trouvé");
     return;
   }
+  if (!priceDealab) {
+    console.error("Aucun prix trouvé");
+    return;
+  }
+
+  // Calculer le lifetime moyen
+  const averageLifetime = calculateAverageLifetime(deals);
+
+  // Calculer l'indicateur good deal 
+  // si goodDealValue<0 c'est vraiment pas bon (on a pas de marge), si 0.5<goodDealValue<1.5 c'est pas mal, si goodDealValue>1.5 c'est très bien
+  const x = indicators.average;
+  const goodDealValue = calculateGoodDeal(x, priceDealab, averageLifetime);
+
+  // Calculer l'indicateur "Good Deal" (utilise P50 comme référence par défaut)
+  //const dealsWithGoodDeal = calculateGoodDeals(deals, indicators.p50, averageLifetime);
+
 
   // Ouvrir une nouvelle fenêtre
-  console.log(indicators);
   const vintedWindow = window.open('', '_blank', 'width=800,height=600');
 
-  // Vérification de l'ouverture correcte de la fenêtre
   if (!vintedWindow) {
     console.error("Impossible d'ouvrir la fenêtre");
     return;
@@ -357,9 +368,11 @@ const openVintedDealsWindow = async (deals, indicators) => {
             <table>
               <thead>
                 <tr>
-                  <th>Prix (€)</th>
-                  <th>Date de Publication</th>
-                  <th>Lien</th>
+                  <th>Price (€)</th>
+                  <th>Publication Date</th>
+                  <th>Link</th>
+                  <th>Lifetime</th>
+                  <!--<th>Good Deal</th>-->
                 </tr>
               </thead>
               <tbody id="vintedDealsTableBody">
@@ -368,11 +381,13 @@ const openVintedDealsWindow = async (deals, indicators) => {
           </div>
           <div class="indicators">
             <h2>Indicators</h2>
-            <p><strong>Nombre de ventes:</strong> <span id="nbSales">${indicators.nbSales}</span></p>
-            <p><strong>Prix moyen:</strong> <span id="averagePrice">${indicators.average}</span></p>
-            <p><strong>P25:</strong> <span id="p25Price">${indicators.p25}</span></p>
-            <p><strong>P50 (médiane):</strong> <span id="p50Price">${indicators.p50}</span></p>
-            <p><strong>P95:</strong> <span id="p95Price">${indicators.p95}</span></p>
+            <p><strong>Number of sales:</strong> <span id="nbSales">${indicators.nbSales}</span></p>
+            <p><strong>Average price:</strong> <span id="averagePrice">${indicators.average} €</span></p>
+            <p><strong>P25 (bottom of the basket):</strong> <span id="p25Price">${indicators.p25} €</span></p>
+            <p><strong>P50 (middle of the basket):</strong> <span id="p50Price">${indicators.p50} €</span></p>
+            <p><strong>P95 (top of the basket):</strong> <span id="p95Price">${indicators.p95} €</span></p>
+            <p><strong>Average lifetime:</strong> <span id="averageLifetime">${averageLifetime} jours</span></p>
+            <p><strong>Good Deal:</strong> <span id="averageGoodDeal">${goodDealValue}</span></p>
           </div>
         </div>
       </body>
@@ -381,18 +396,52 @@ const openVintedDealsWindow = async (deals, indicators) => {
 
   // Injecter les données des Vinted Deals dans le tableau
   const vintedDealsTableBody = vintedWindow.document.getElementById('vintedDealsTableBody');
-  
+
   deals.forEach(deal => {
     if (deal.price && deal.date && deal.url) {
+      const lifetime = calculateLifetime(deal.date); // Convertir en format lisible
       const row = vintedWindow.document.createElement('tr');
       row.innerHTML = `
         <td>${deal.price}€</td>
         <td>${new Date(deal.date * 1000).toLocaleDateString()}</td>
-        <td><a href="${deal.url}" target="_blank">Voir le deal</a></td>
+        <td><a href="${deal.url}" target="_blank">Go to vinted</a></td>
+        <td>${lifetime}</td>
+        <!--<td>${deal.goodDeal}</td>-->
       `;
       vintedDealsTableBody.appendChild(row);
     }
   });
+};
+
+
+/**
+ * Calculate the "Good Deal" indicator for a deal
+ * @param {Number} x - Average price (average vinted) or median price (p50)
+ * @param {Number} dealPrice - Price of the deal
+ * @param {Number} averageLifetime - Average lifetime in days
+ * @return {Number} - Good Deal indicator value
+ */
+const calculateGoodDeal = (x, dealPrice, averageLifetime) => {
+  if (averageLifetime === 0) return 0; // Avoid division by zero
+  return ((x - dealPrice) / averageLifetime).toFixed(2);
+};
+
+
+/**
+ * Calculate the average lifetime of deals in days
+ * @param {Array} deals - List of deals with a `date` property (Unix timestamp)
+ * @return {Number} - Average lifetime in days
+ */
+const calculateAverageLifetime = (deals) => {
+  const now = Math.floor(Date.now() / 1000); // Current timestamp in seconds
+
+  const lifetimesInDays = deals.map(deal => {
+    const diffInSeconds = now - deal.date;
+    return Math.floor(diffInSeconds / (3600 * 24)); // Convert seconds to days
+  });
+
+  const totalLifetime = lifetimesInDays.reduce((sum, lifetime) => sum + lifetime, 0);
+  return (totalLifetime / lifetimesInDays.length).toFixed(2); // Return average with 2 decimals
 };
 
 
