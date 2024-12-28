@@ -148,7 +148,7 @@ const renderDeals = deals => {
         <div class="deal-text">
           <div class="deal-info">
             <span>ID: ${deal.legoID}</span>
-            <button class="favorite-btn" data-deal-id="${deal.uuid}">Save as Favorite</button>
+            <button class="favorite-btn" data-deal-id="${deal._id}">Save as Favorite</button>
           </div>
           <div style="display: flex; flex-direction: column; gap: 10px;">
             <a href="${deal.link}" target="_blank">${deal.title}</a>
@@ -175,6 +175,7 @@ const renderDeals = deals => {
   favoriteButtons.forEach(button => {
     button.addEventListener('click', (event) => {
       const dealId = event.target.getAttribute('data-deal-id');
+      console.log(dealId);
       saveDealAsFavorite(dealId);
     });
   });
@@ -199,6 +200,17 @@ const renderDeals = deals => {
     });
   });
 };
+
+// Ajouter un gestionnaire pour filtrer les favoris
+filterFavoritesCheckbox.addEventListener('change', (event) => {
+  if (event.target.checked) {
+    const favoriteDeals = JSON.parse(localStorage.getItem('favoriteDeals')) || [];
+    render(favoriteDeals, { currentPage: 1, pageCount: 1 }); // Afficher uniquement les favoris
+  } else {
+    render(currentDeals, currentPagination); // Revenir à l'affichage standard
+  }
+});
+
 
 /**
  * Render list of Vinted deals
@@ -283,14 +295,25 @@ const renderPagination = pagination => {
 };
 
 /**
+ * Clear all favorite deals
+ */
+const clearFavorites = () => {
+  localStorage.removeItem('favoriteDeals');
+  alert('All favorite deals have been cleared!');
+  // Optionally re-render to update the display
+  render(currentDeals, currentPagination);
+};
+
+/**
  * Save deal as favorite
  * @param {String} dealId - ID of the deal to save
  */
 const saveDealAsFavorite = (dealId) => {
   const favoriteDeals = JSON.parse(localStorage.getItem('favoriteDeals')) || [];
 
+  //clearFavorites();
   // Find the deal by ID from current deals
-  const deal = currentDeals.find(d => d.uuid === dealId);
+  const deal = currentDeals.find(d => d._id === dealId);
 
   if (deal) {
     // Check if deal is already saved
@@ -526,6 +549,20 @@ filterFavoritesCheckbox.addEventListener('change', () => {
     render(currentDeals, currentPagination);
   }
 });
+
+/**
+ * Render list of favorite deals (filtered)
+ */
+const renderFavoriteDeals = () => {
+  const favoriteDeals = JSON.parse(localStorage.getItem('favoriteDeals')) || [];
+
+  if (favoriteDeals.length === 0) {
+    sectionDeals.innerHTML = '<p>No favorite deals saved yet.</p>';
+    return;
+  }
+
+  renderDeals(favoriteDeals); // Use the same renderDeals function to show favorite deals
+};
 
 /**
  * Filter by discount, hot deals and temperature
